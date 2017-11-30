@@ -25,7 +25,7 @@ if %errorlevel% == 0 (
     echo Remount...
     .\platform-tools\adb -s %emulatorname% remount
 
-    for /F "tokens=2*delims==" %%a IN ('findstr /R abi.type "%UserProfile%\.android\avd\%avd%\config.ini"') do SET arch=%%a
+    for /F "tokens=2*delims==" %%a IN ('findstr /R abi.type "%UserProfile%\.android\avd\%avd%.avd\config.ini"') do SET arch=%%a
 
     IF "%arch%"=="x86" (SET sufile=x86\su.pie)
     IF "%arch%"=="x64" (SET sufile=x64\su)
