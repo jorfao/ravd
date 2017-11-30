@@ -21,8 +21,22 @@ if %errorlevel% == 0 (
     .\platform-tools\adb -s %emulatorname% root
     echo Remount...
     .\platform-tools\adb -s %emulatorname% remount
-    echo Pushing su.pie...
-    .\platform-tools\adb -s %emulatorname% push %spath%su.pie /system/bin/su
+
+    for /F "tokens=2*delims==" %%a IN ('findstr /R abi.type "%UserProfile%\.android\avd\%avd%\config.ini"') do SET arch=%%a
+
+    IF "%arch%"=="x86" (SET sufile=x86\su.pie)
+    IF "%arch%"=="x64" (SET sufile=x64\su)
+    IF "%arch%"=="x86_64" (SET sufile=x64\su)
+    IF "%arch%"=="armeabi-v7a" (SET sufile=armv7\su)
+    IF "%arch%"=="mips" (SET sufile=mips\su)
+    IF "%arch%"=="mips64" (SET sufile=mips64\su)
+    IF "%arch%"=="arm64-v8a" (SET sufile=arm64\su)
+    IF "%arch%"=="arm" (SET sufile=arm\su)
+    IF "%arch%"=="armeabi" (SET sufile=arm\su)
+    
+    echo Pushing su.pie for %arch%...
+    echo %spath%%sufile%
+    .\platform-tools\adb -s %emulatorname% push %spath%%sufile% /system/bin/su
     echo Changing su permissions...
     .\platform-tools\adb -s %emulatorname% shell chmod 06755 /system/bin/su
     echo Running daemon...
@@ -34,4 +48,3 @@ if %errorlevel% == 0 (
 ) else (
     echo Error: Emulator %2 not found &&EXIT /B
 )
-
