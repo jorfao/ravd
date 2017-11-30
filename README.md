@@ -5,8 +5,6 @@ Start an emulator with root privileges. Currently only available for Windows.
 
 Operation:
 
-Run the script from the same folder as "su.pie":
-
 ravd.bat [ANDROID_SDK_LOCATION] [AVD_NAME]
 
 
