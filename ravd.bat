@@ -15,10 +15,13 @@ cd %sdk%
 
 if %errorlevel% == 0 (
     start "" /D ".\tools\" emulator -avd %avd% -no-snapshot-load -verbose -writable-system -port 9898
+    
     echo Wait for avd to boot...
     .\platform-tools\adb -s %emulatorname% wait-for-device
+    
     echo Getting root access...
     .\platform-tools\adb -s %emulatorname% root
+    
     echo Remount...
     .\platform-tools\adb -s %emulatorname% remount
 
@@ -35,14 +38,16 @@ if %errorlevel% == 0 (
     IF "%arch%"=="armeabi" (SET sufile=arm\su)
     
     echo Pushing su.pie for %arch%...
-    echo %spath%%sufile%
     .\platform-tools\adb -s %emulatorname% push %spath%%sufile% /system/bin/su
+    
     echo Changing su permissions...
     .\platform-tools\adb -s %emulatorname% shell chmod 06755 /system/bin/su
+    
     echo Running daemon...
     .\platform-tools\adb -s %emulatorname% shell su --install
     .\platform-tools\adb -s %emulatorname% shell "su --daemon&"
     .\platform-tools\adb -s %emulatorname% shell setenforce 0
+    
     echo Success
     cd %spath%
 ) else (
