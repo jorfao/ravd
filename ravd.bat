@@ -25,28 +25,30 @@ if %errorlevel% == 0 (
     echo Remount...
     .\platform-tools\adb -s %emulatorname% remount
 
-    for /F "tokens=2*delims==" %%a IN ('findstr /R abi.type "%UserProfile%\.android\avd\%avd%.avd\config.ini"') do SET arch=%%a
+    FOR /F "tokens=2*delims==" %%a IN ('findstr /R abi.type "%UserProfile%\.android\avd\%avd%.avd\config.ini"') do SET arch=%%a
 
-    IF "%arch%"=="x86" (SET sufile=x86\su.pie)
-    IF "%arch%"=="x64" (SET sufile=x64\su)
-    IF "%arch%"=="x86_64" (SET sufile=x64\su)
-    IF "%arch%"=="armeabi-v7a" (SET sufile=armv7\su)
-    IF "%arch%"=="mips" (SET sufile=mips\su)
-    IF "%arch%"=="mips64" (SET sufile=mips64\su)
-    IF "%arch%"=="arm64-v8a" (SET sufile=arm64\su)
-    IF "%arch%"=="arm" (SET sufile=arm\su)
-    IF "%arch%"=="armeabi" (SET sufile=arm\su)
-    
-    echo Pushing su.pie for %arch%...
-    .\platform-tools\adb -s %emulatorname% push %spath%%sufile% /system/bin/su
+    IF "!arch!"=="x86" (SET sufile=x86\su.pie SET sufilename=su.pie)
+    IF "!arch!"=="x64" (SET sufile=x64\su SET sufilename=su)
+    IF "!arch!"=="x86_64" (SET sufile=x64\su SET sufilename=su)
+    IF "!arch!"=="armeabi-v7a" (SET sufile=armv7\su SET sufilename=su)
+    IF "!arch!"=="mips" (SET sufile=mips\su SET sufilename=su)
+    IF "!arch!"=="mips64" (SET sufile=mips64\su SET sufilename=su)
+    IF "!arch!"=="arm64-v8a" (SET sufile=arm64\su SET sufilename=su)
+    IF "!arch!"=="arm" (SET sufile=arm\su SET sufilename=su)
+    IF "!arch!"=="armeabi" (SET sufile=arm\su SET sufilename=su)
+
+    SET sufile=%arch%\%sufilename%
+
+    echo Pushing %sufilename% for %arch%...
+    .\platform-tools\adb -s %emulatorname% push %spath%%sufile% /system/bin/%sufilename%
     
     echo Changing su permissions...
-    .\platform-tools\adb -s %emulatorname% shell chmod 06755 /system/bin/su
+    .\platform-tools\adb -s %emulatorname% shell chmod 06755 /system/bin/%sufilename%
     
     echo Running daemon...
-    .\platform-tools\adb -s %emulatorname% shell su --install
-    .\platform-tools\adb -s %emulatorname% shell "su --daemon&"
-    .\platform-tools\adb -s %emulatorname% shell setenforce 0
+    .\platform-tools\adb -s %emulatorname% shell "%sufilename% --install"
+    .\platform-tools\adb -s %emulatorname% shell "%sufilename% --daemon&"
+    .\platform-tools\adb -s %emulatorname% shell "setenforce 0"
     
     echo Success
     cd %spath%
